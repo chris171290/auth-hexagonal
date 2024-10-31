@@ -45,7 +45,8 @@ export class AuthController {
       return await this.userSignIn.execute({ ...signInDto });
     } catch (error) {
       if (error instanceof UserNotFoundError) {
-        throw new NotFoundException('User not Found');
+        // console.log(error);
+        throw new NotFoundException(error.message);
       }
       throw error;
     }
