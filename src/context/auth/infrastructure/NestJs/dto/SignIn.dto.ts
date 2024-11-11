@@ -1,7 +1,7 @@
-import { SignInRequest } from '../../../applications/sing-in/SignInRequest';
+import { SignInRequest } from '../../../applications/sign-in/SignInRequest';
 import { IsEmail, IsString, MinLength } from 'class-validator';
 
-export class SingInDto implements Omit<SignInRequest, 'id'> {
+export class SignInDto implements Omit<SignInRequest, 'id'> {
   @IsEmail()
   email: string;
 

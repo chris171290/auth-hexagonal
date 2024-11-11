@@ -1,6 +1,6 @@
-import { Auth } from '../models/Auth';
+import { Auth, Credentials } from '../models/Auth';
 
 export interface IAuthRepository {
-  signIn(credential: Auth): Promise<{ access_token: string }>;
-  signUp(user: Auth): Promise<void>;
+  signIn(credential: Credentials): Promise<{ access_token: string }>;
+  signUp(user: Auth): Promise<Auth>;
 }

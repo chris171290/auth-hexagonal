@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './AuthController';
-import { SignIn } from '../../applications/sing-in/SignIn';
+import { SignIn } from '../../applications/sign-in/SignIn';
 import { TypeOrmUserRepository } from '../TypeOrm/TypeOrmUserRepository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmUserEntity } from '../TypeOrm/TypeOrmUserEntity';
@@ -8,6 +8,7 @@ import { TypeOrmUserEntity } from '../TypeOrm/TypeOrmUserEntity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy';
+import { SignUp } from '../../applications/sign-up/SignUp';
 
 @Module({
   imports: [
@@ -33,11 +34,11 @@ import { JwtStrategy } from './strategy';
       useFactory: (repository: TypeOrmUserRepository) => new SignIn(repository),
       inject: ['IAuthRepository'],
     },
-    // {
-    //   provide: 'SignUp',
-    //   useFactory: (repository: TypeOrmUserRepository) => new SignIn(repository),
-    //   inject: [TypeOrmUserRepository],
-    // },
+    {
+      provide: 'SignUp',
+      useFactory: (repository: TypeOrmUserRepository) => new SignUp(repository),
+      inject: ['IAuthRepository'],
+    },
   ],
 })
 export class AuthModule {}

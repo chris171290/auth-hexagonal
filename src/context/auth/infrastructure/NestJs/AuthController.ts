@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Get,
   HttpCode,
@@ -7,19 +8,20 @@ import {
   Inject,
   NotFoundException,
   Post,
-  Req,
   UseGuards,
 } from '@nestjs/common';
-import { SignIn } from '../../applications/sing-in/SignIn';
-import { SingInDto } from './dto/SingIn.dto';
+import { SignIn } from '../../applications/sign-in/SignIn';
+import { SignInDto } from './dto/SignIn.dto';
 import { UserNotFoundError } from '../../domain/exceptions/UserNotFoundError';
 import { AuthGuard } from '@nestjs/passport';
+import { SignUp } from '../../applications/sign-up/SignUp';
+import { SignUpDto } from './dto/SignUp.dto';
 
 @Controller('/api/v1/auth')
 export class AuthController {
   constructor(
     @Inject('SignIn') private readonly userSignIn: SignIn,
-    // @Inject('SingUp') private readonly userSingup: SingUp,
+    @Inject('SignUp') private readonly userSingup: SignUp,
     // @Inject('UserGetAll') private readonly userGetAll: UserGetAll,
     // @Inject('UserGetOneById') private readonly userGetOneById: UserGetOneById,
     // @Inject('UserCreate') private readonly userCreate: UserCreate,
@@ -38,17 +40,29 @@ export class AuthController {
   //POST /auth/signin
   @HttpCode(HttpStatus.OK)
   @Post('signin')
-  async signIn(@Body() signInDto: SingInDto) {
-    console.log('controller:', signInDto);
-
+  async signIn(@Body() signInDto: SignInDto) {
     try {
-      return await this.userSignIn.execute({ ...signInDto });
+      return await this.userSignIn.execute(signInDto);
     } catch (error) {
       if (error instanceof UserNotFoundError) {
-        // console.log(error);
         throw new NotFoundException(error.message);
       }
       throw error;
+    }
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('signup')
+  async signUp(@Body() signInDto: SignUpDto) {
+    try {
+      return (
+        await this.userSingup.execute({
+          ...signInDto,
+          createdAt: new Date(),
+        })
+      ).toPlainObject();
+    } catch (error) {
+      throw new ConflictException(error.message);
     }
   }
 }

@@ -31,7 +31,7 @@ export class TypeOrmUserRepository implements IAuthRepository {
     // if password incorrect throw exception
     if (!pwMatches) throw new ForbiddenException('Credentials incorrect');
 
-    return this.signToken(parseInt(user.id), user.email);
+    return await this.signToken(parseInt(user.id), user.email);
   }
 
   async signToken(
@@ -54,5 +54,16 @@ export class TypeOrmUserRepository implements IAuthRepository {
     };
   }
 
-  async signUp(user: Auth): Promise<void> {}
+  async signUp(user: Auth): Promise<Auth> {
+    await this.repository.save({
+      id: user.id.value,
+      email: user.email.value,
+      password: user.password.value,
+      firstName: user.firstName.value,
+      lastName: user.lastName.value,
+      createdAt: user.createdAt.value,
+    });
+
+    return user;
+  }
 }
