@@ -16,7 +16,9 @@ import { UserNotFoundError } from '../../domain/exceptions/UserNotFoundError';
 import { AuthGuard } from '@nestjs/passport';
 import { SignUp } from '../../applications/sign-up/SignUp';
 import { SignUpDto } from './dto/SignUp.dto';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('/api/v1/auth')
 export class AuthController {
   constructor(
@@ -31,8 +33,10 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('status')
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
   getApiStatus(): any {
     return {
+      date: new Date(),
       status: 'OK',
     };
   }
@@ -40,6 +44,11 @@ export class AuthController {
   //POST /auth/signin
   @HttpCode(HttpStatus.OK)
   @Post('signin')
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully logged in.',
+  })
+  @ApiResponse({ status: 404, description: 'User not found.' })
   async signIn(@Body() signInDto: SignInDto) {
     try {
       return await this.userSignIn.execute(signInDto);
@@ -51,8 +60,16 @@ export class AuthController {
     }
   }
 
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   @Post('signup')
+  @ApiResponse({
+    status: 201,
+    description: 'The record has been successfully created.',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'The record already exists.',
+  })
   async signUp(@Body() signInDto: SignUpDto) {
     try {
       return (
