@@ -16,7 +16,7 @@ import { UserNotFoundError } from '../../domain/exceptions/UserNotFoundError';
 import { AuthGuard } from '@nestjs/passport';
 import { SignUp } from '../../applications/sign-up/SignUp';
 import { SignUpDto } from './dto/SignUp.dto';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Auth')
 @Controller('/api/v1/auth')
@@ -33,6 +33,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('status')
+  @ApiBearerAuth('JWTAuthorization')
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   getApiStatus(): any {
     return {
