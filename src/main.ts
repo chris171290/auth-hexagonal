@@ -2,6 +2,16 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import 'reflect-metadata';
 import { ValidationPipe, BadRequestException } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
+const config = new DocumentBuilder()
+  .setTitle('HexaAuth - Secure REST API with NestJS')
+  .setDescription(
+    'Explore the HexaAuth API, built with NestJS and designed using hexagonal architecture. This RESTful API provides secure authentication endpoints. Use our Swagger UI to interact with the API and manage user accounts easily.',
+  )
+  .setVersion('1.0')
+  // .addTag('Authentication')
+  .build();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +28,9 @@ async function bootstrap() {
       stopAtFirstError: true,
     }),
   );
+
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, documentFactory);
 
   await app.listen(process.env.PORT ?? 3000);
 }
